@@ -1,0 +1,63 @@
+name: Deploy to Hugging Face Spaces
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-hf-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Swap in HF-specific files
+        run: |
+          cp deploy/hf-spaces/Dockerfile Dockerfile
+          cp deploy/hf-spaces/README.md README.md
+
+      - name: Push to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE_REPO }}
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+          git add Dockerfile README.md
+          git commit -m "ci: deploy $(git rev-parse --short HEAD) to HF Spaces"
+
+          git push --force https://token:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE} HEAD:main
+
+      - name: Verify deployment
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE_REPO }}
+        run: |
+          SPACE_URL="https://$(echo "$HF_SPACE" | tr '/' '-').hf.space"
+          echo "Space URL: $SPACE_URL"
+          echo "Waiting for HF Space to rebuild..."
+          sleep 120
+
+          for i in 1 2 3 4 5 6; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: Bearer $HF_TOKEN" \
+              "$SPACE_URL/health" || true)
+            if [ "$STATUS" = "200" ]; then
+              echo "Health check passed (attempt $i)"
+              exit 0
+            fi
+            echo "Attempt $i: HTTP $STATUS, retrying in 30s..."
+            sleep 30
+          done
+
+          echo "Health check did not pass — Space may still be building"
+          echo "Check: https://huggingface.co/spaces/$HF_SPACE"

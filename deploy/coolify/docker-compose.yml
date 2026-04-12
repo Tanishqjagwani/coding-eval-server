@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  coding-eval-server:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    container_name: coding-eval-server
+    restart: unless-stopped
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+      - CLAUDE_CODE_OAUTH_TOKEN=${CLAUDE_CODE_OAUTH_TOKEN}
+      - HF_URL=${HF_URL}
+      - HF_MODEL=${HF_MODEL}
+      - HF_API_KEY=${HF_API_KEY}
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s

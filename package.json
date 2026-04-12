@@ -1,0 +1,23 @@
+{
+  "name": "coding-eval-server",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "description": "Standalone coding agent orchestrator — uses Claude CLI to execute HF model tool calls",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.25",
+    "hono": "^4.11.7",
+    "nanoid": "^5.1.6",
+    "zod": "^3.24.0"
+  }
+}
