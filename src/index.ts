@@ -1,5 +1,6 @@
 import { app } from './app'
 import { getConfig } from './config'
+import { getConfiguredProviders } from './providers/registry'
 
 let port = 4001
 try {
@@ -18,3 +19,4 @@ const server = Bun.serve({
 
 console.log(`Coding eval orchestrator listening on http://localhost:${server.port}`)
 console.log(`  CLAUDE_MODEL: ${process.env.CLAUDE_MODEL ?? 'sonnet'}`)
+console.log(`  Providers: ${JSON.stringify(getConfiguredProviders())}`)

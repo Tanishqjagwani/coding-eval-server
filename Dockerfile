@@ -23,6 +23,9 @@ RUN pip3 install --break-system-packages --no-cache-dir \
 # Install Claude Code CLI globally (spawned by @anthropic-ai/claude-agent-sdk)
 RUN npm install -g @anthropic-ai/claude-code
 
+# Install Codex CLI globally (spawned by CodexProvider)
+RUN npm install -g @openai/codex
+
 # Non-root user (Claude CLI requires this)
 RUN useradd -m -s /bin/bash appuser
 

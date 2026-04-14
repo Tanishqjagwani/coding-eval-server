@@ -13,6 +13,7 @@ services:
       - PORT=4001
       - CLAUDE_CODE_OAUTH_TOKEN=${CLAUDE_CODE_OAUTH_TOKEN}
       - CLAUDE_MODEL=${CLAUDE_MODEL:-sonnet}
+      - CODEX_AUTH_JSON=${CODEX_AUTH_JSON}
     deploy:
       resources:
         limits:

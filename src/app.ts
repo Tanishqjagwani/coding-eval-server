@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { getConfiguredProviders } from './providers/registry'
 import { completions } from './routes/completions'
 import { traces } from './routes/traces'
 
@@ -14,6 +15,7 @@ app.get('/health', (c) =>
     status: 'healthy',
     service: 'coding-eval-orchestrator',
     model: process.env.CLAUDE_MODEL ?? 'sonnet',
+    providers: getConfiguredProviders(),
   }),
 )
 
