@@ -68,6 +68,7 @@ export interface ExecutionTrace {
   trace_id: string
   task: string
   model: string
+  provider?: string
   steps: CodingStep[]
   total_steps: number
   total_duration_ms: number
