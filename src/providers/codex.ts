@@ -1,4 +1,4 @@
-import { writeFileSync, mkdirSync, existsSync } from 'node:fs'
+import { writeFileSync, readFileSync, mkdirSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { homedir } from 'node:os'
 import { createLogger } from '../lib/logger'
@@ -204,11 +204,21 @@ export class CodexProvider implements Provider {
       }
 
       if (item.type === 'file_change' && Array.isArray(item.changes)) {
-        const toolCalls: CodingStepToolCall[] = item.changes.map((change: any) => ({
-          tool_name: 'Write',
-          tool_input: { file_path: change.path || '', kind: change.kind || 'add' },
-          tool_result: item.status || 'completed',
-        }))
+        const toolCalls: CodingStepToolCall[] = item.changes.map((change: any) => {
+          const filePath = change.path || ''
+          // Codex CLI doesn't include file content in events — read it from disk
+          let content = ''
+          if (filePath && (change.kind === 'add' || change.kind === 'modify')) {
+            try {
+              content = readFileSync(filePath, 'utf-8')
+            } catch { /* file may have been deleted or is unreadable */ }
+          }
+          return {
+            tool_name: 'Write',
+            tool_input: { file_path: filePath, content },
+            tool_result: item.status || 'completed',
+          }
+        })
         const filePaths = item.changes.map((c: any) => c.path || 'unknown').join(', ')
         log.tool(`file: ${filePaths}`)
         steps.push({
