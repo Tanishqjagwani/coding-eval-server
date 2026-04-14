@@ -12,9 +12,7 @@ services:
     environment:
       - PORT=4001
       - CLAUDE_CODE_OAUTH_TOKEN=${CLAUDE_CODE_OAUTH_TOKEN}
-      - HF_URL=${HF_URL}
-      - HF_MODEL=${HF_MODEL}
-      - HF_API_KEY=${HF_API_KEY}
+      - CLAUDE_MODEL=${CLAUDE_MODEL:-sonnet}
     deploy:
       resources:
         limits:

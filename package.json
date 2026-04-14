@@ -3,7 +3,7 @@
   "module": "src/index.ts",
   "type": "module",
   "private": true,
-  "description": "Standalone coding agent orchestrator — uses Claude CLI to execute HF model tool calls",
+  "description": "Standalone coding agent orchestrator — uses Claude as both brain and hands via Agent SDK",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "start": "bun run src/index.ts"

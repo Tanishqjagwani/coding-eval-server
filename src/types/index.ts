@@ -25,7 +25,7 @@ export interface ChatMessage {
 export interface ChatCompletionsRequest {
   model?: string
   messages: ChatMessage[]
-  max_turns?: number // extension: max Claude CLI turns (default 30)
+
 }
 
 export interface ChatCompletionsResponse {
@@ -67,8 +67,7 @@ export interface CodingStep {
 export interface ExecutionTrace {
   trace_id: string
   task: string
-  hf_model: string
-  hf_url: string
+  model: string
   steps: CodingStep[]
   total_steps: number
   total_duration_ms: number

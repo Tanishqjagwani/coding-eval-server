@@ -17,5 +17,4 @@ const server = Bun.serve({
 })
 
 console.log(`Coding eval orchestrator listening on http://localhost:${server.port}`)
-console.log(`  HF_MODEL: ${process.env.HF_MODEL ?? '(not set)'}`)
-console.log(`  HF_URL:   ${process.env.HF_URL ?? '(not set)'}`)
+console.log(`  CLAUDE_MODEL: ${process.env.CLAUDE_MODEL ?? 'sonnet'}`)

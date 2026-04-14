@@ -1,9 +1,7 @@
 import { z } from 'zod'
 
 const envSchema = z.object({
-  HF_URL: z.string().min(1, 'HF_URL is required'),
-  HF_MODEL: z.string().min(1, 'HF_MODEL is required'),
-  HF_API_KEY: z.string().optional(),
+  CLAUDE_MODEL: z.string().default('sonnet'),
   PORT: z.coerce.number().default(4001),
 })
 

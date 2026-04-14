@@ -13,8 +13,7 @@ app.get('/health', (c) =>
   c.json({
     status: 'healthy',
     service: 'coding-eval-orchestrator',
-    hf_model: process.env.HF_MODEL ?? '(not set)',
-    hf_url: process.env.HF_URL ?? '(not set)',
+    model: process.env.CLAUDE_MODEL ?? 'sonnet',
   }),
 )
 

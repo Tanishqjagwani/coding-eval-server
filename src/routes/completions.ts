@@ -15,7 +15,7 @@ const messageSchema = z.object({
 const completionsRequestSchema = z.object({
   model: z.string().optional(),
   messages: z.array(messageSchema).min(1),
-  max_turns: z.number().int().min(1).max(100).optional(),
+
 })
 
 completions.post('/', async (c) => {
@@ -31,7 +31,6 @@ completions.post('/', async (c) => {
         tool_calls: m.tool_calls,
         tool_call_id: m.tool_call_id,
       })),
-      max_turns: parsed.max_turns,
     }
 
     const response = await runOrchestration(request)

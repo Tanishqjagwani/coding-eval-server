@@ -2,7 +2,6 @@ import { query } from '@anthropic-ai/claude-agent-sdk'
 import { nanoid } from 'nanoid'
 import { getConfig } from '../config'
 import { createLogger, logSdkMessage } from '../lib/logger'
-import { buildOrchestratorPrompt } from './prompt-builder'
 import { saveTrace } from './trace-store'
 import type {
   AgentToolCall,
@@ -114,7 +113,8 @@ function collectFilePaths(steps: CodingStep[]): string[] {
 export async function runOrchestration(
   request: ChatCompletionsRequest,
 ): Promise<ChatCompletionsResponse> {
-  const { HF_URL, HF_MODEL, HF_API_KEY } = getConfig()
+  const { CLAUDE_MODEL } = getConfig()
+  const model = request.model || CLAUDE_MODEL
 
   const traceId = nanoid()
   const log = createLogger(`orch:${traceId.slice(0, 6)}`)
@@ -128,18 +128,18 @@ export async function runOrchestration(
 
   const systemPrompt = extractSystemPrompt(request.messages)
   const userTask = extractUserTask(request.messages)
-  const prompt = buildOrchestratorPrompt(userTask, HF_URL, HF_MODEL, HF_API_KEY)
+  const prompt = userTask
 
   log.info(`Starting orchestration for task: "${userTask.slice(0, 80)}..."`)
-  log.info(`HF model: ${HF_MODEL} | URL: ${HF_URL}`)
+  log.info(`Model: ${model}`)
 
   try {
     for await (const message of query({
       prompt,
       options: {
-        model: 'sonnet',
+        model,
         systemPrompt,
-        maxTurns: request.max_turns ?? 30,
+        maxTurns: 50,
         permissionMode: 'bypassPermissions',
         cwd: process.cwd(),
         env: { ...runtimeEnv },
@@ -210,8 +210,7 @@ export async function runOrchestration(
   saveTrace({
     trace_id: traceId,
     task: userTask,
-    hf_model: HF_MODEL,
-    hf_url: HF_URL,
+    model,
     steps,
     total_steps: stepNumber,
     total_duration_ms: totalDuration,
@@ -224,7 +223,7 @@ export async function runOrchestration(
     id: `chatcmpl-${traceId}`,
     object: 'chat.completion',
     created: Math.floor(Date.now() / 1000),
-    model: HF_MODEL,
+    model,
     choices: [
       {
         index: 0,
